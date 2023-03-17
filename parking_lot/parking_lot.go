@@ -3,7 +3,8 @@ package parking_lot
 import "errors"
 
 var (
-	ParkingFullError = errors.New("parking lot is full")
+	ParkingFullError     = errors.New("parking lot is full")
+	VehicleNotfoundError = errors.New("vehicle not found")
 )
 
 type ParkingLot struct {
@@ -32,4 +33,13 @@ func (p *ParkingLot) IsVehicleParked(regNumber string) bool {
 
 func (p *ParkingLot) IsFull() bool {
 	return len(p.vehicles) >= p.capacity
+}
+
+func (p *ParkingLot) UnparkVehicle(regNumber string) error {
+
+	if p.IsVehicleParked(regNumber) {
+		delete(p.vehicles, regNumber)
+		return nil
+	}
+	return VehicleNotfoundError
 }
