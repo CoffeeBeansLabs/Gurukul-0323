@@ -19,7 +19,3 @@ func (o *Owner) NotifyParkingFull() {
 		o.isNotified = true
 	}
 }
-
-func (o *Owner) ResetNotification() {
-	o.isNotified = false
-}
