@@ -6,12 +6,24 @@ import (
 )
 
 func main() {
-	parkingLot := parking_lot.NewParkingLot(5)
-	err := parkingLot.ParkVehicle("abc123")
-	if err != nil {
-		return
+
+	owner := parking_lot.NewOwner()
+	parkingLot := parking_lot.NewParkingLot(3, owner)
+
+	go owner.ListenForNotifications()
+
+	firstVehicleParkingErr := parkingLot.ParkVehicle("ABC-123")
+	if firstVehicleParkingErr != nil {
+		fmt.Println(firstVehicleParkingErr)
 	}
-	if parkingLot.IsVehicleParked("abc123") {
-		fmt.Println("Vehicle parked successfully")
+
+	SecondVehicleParkingErr := parkingLot.ParkVehicle("DEF-456")
+	if SecondVehicleParkingErr != nil {
+		fmt.Println(SecondVehicleParkingErr)
 	}
+
+	//ThirdVehicleParkingErr := parkingLot.ParkVehicle("ABC-123")
+	//if ThirdVehicleParkingErr != nil {
+	//	fmt.Println(ThirdVehicleParkingErr)
+	//}
 }

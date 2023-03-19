@@ -1,26 +1,37 @@
 package parking_lot
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	ParkingFullError     = errors.New("parking lot is full")
 	VehicleNotfoundError = errors.New("vehicle not found")
+	VehicleAlreadyParked = errors.New("vehicle already parked")
 )
 
 type ParkingLot struct {
 	capacity int
 	vehicles map[string]bool
+	owner    *Owner
 }
 
-func NewParkingLot(capacity int) *ParkingLot {
+func NewParkingLot(capacity int, owner *Owner) *ParkingLot {
 	return &ParkingLot{
 		capacity: capacity,
 		vehicles: make(map[string]bool),
+		owner:    owner,
 	}
 }
 
 func (p *ParkingLot) ParkVehicle(regNumber string) error {
+
+	if p.IsVehicleParked(regNumber) {
+		return VehicleAlreadyParked
+	}
+
 	if p.IsFull() {
+		p.owner.NotifyParkingFull()
 		return ParkingFullError
 	}
 	p.vehicles[regNumber] = true
@@ -32,7 +43,13 @@ func (p *ParkingLot) IsVehicleParked(regNumber string) bool {
 }
 
 func (p *ParkingLot) IsFull() bool {
-	return len(p.vehicles) >= p.capacity
+	count := 0
+	for _, parked := range p.vehicles {
+		if parked {
+			count++
+		}
+	}
+	return count >= p.capacity
 }
 
 func (p *ParkingLot) UnparkVehicle(regNumber string) error {
