@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	parkingLot := parking_lot.NewParkingLot(5)
+	owner := parking_lot.Owner{}
+	parkingLot := parking_lot.NewParkingLot(5, &owner)
 	err := parkingLot.ParkVehicle("abc123")
 	if err != nil {
 		return
