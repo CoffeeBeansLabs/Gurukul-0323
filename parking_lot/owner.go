@@ -12,6 +12,10 @@ func NewOwner() *Owner {
 	}
 }
 
+type IOwner interface {
+	NotifyParkingFull()
+}
+
 func (o *Owner) NotifyParkingFull() {
 	if !o.isNotified {
 		// send notification to owner that parking lot is full
