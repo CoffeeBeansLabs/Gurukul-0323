@@ -4,6 +4,7 @@ import "errors"
 
 var (
 	ParkingFullError     = errors.New("parking lot is full")
+	VehicleAlreadyParked = errors.New("vehicle already parked")
 	VehicleNotfoundError = errors.New("vehicle not found")
 )
 
@@ -20,6 +21,9 @@ func NewParkingLot(capacity int) *ParkingLot {
 }
 
 func (p *ParkingLot) ParkVehicle(regNumber string) error {
+	if p.IsVehicleParked(regNumber) {
+		return VehicleAlreadyParked
+	}
 	if p.IsFull() {
 		return ParkingFullError
 	}
