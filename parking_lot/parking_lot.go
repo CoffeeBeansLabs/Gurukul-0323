@@ -11,10 +11,10 @@ var (
 type ParkingLot struct {
 	capacity int
 	vehicles map[string]bool
-	owner    *Owner
+	owner    IOwner
 }
 
-func NewParkingLot(capacity int, owner *Owner) *ParkingLot {
+func NewParkingLot(capacity int, owner IOwner) *ParkingLot {
 	return &ParkingLot{
 		capacity: capacity,
 		vehicles: make(map[string]bool),
@@ -37,6 +37,9 @@ func (p *ParkingLot) ParkVehicle(regNumber string) error {
 		return ParkingFullError
 	}
 	p.vehicles[regNumber] = true
+	if p.IsFull() {
+		p.owner.NotifyParkingFull()
+	}
 	return nil
 }
 
@@ -52,7 +55,14 @@ func (p *ParkingLot) UnparkVehicle(regNumber string) error {
 
 	if p.IsVehicleParked(regNumber) {
 		delete(p.vehicles, regNumber)
+		p.owner.NotifyParkingSpaceAvailable()
 		return nil
 	}
+
 	return VehicleNotfoundError
+}
+
+type IOwner interface {
+	NotifyParkingFull()
+	NotifyParkingSpaceAvailable()
 }
