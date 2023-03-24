@@ -12,13 +12,15 @@ type ParkingLot struct {
 	capacity int
 	vehicles map[string]bool
 	owner    IOwner
+	observer []IObserver
 }
 
-func NewParkingLot(capacity int, owner IOwner) *ParkingLot {
+func NewParkingLot(capacity int, observers []IObserver) *ParkingLot {
 	return &ParkingLot{
 		capacity: capacity,
 		vehicles: make(map[string]bool),
-		owner:    owner,
+		//owner:    owner,
+		observer: observers,
 	}
 }
 
@@ -33,12 +35,14 @@ func (p *ParkingLot) ParkVehicle(regNumber string) error {
 		return VehicleAlreadyParked
 	}
 	if p.IsFull() {
-		p.owner.NotifyParkingFull()
+		//p.owner.NotifyParkingFull()
+		p.notifyObservers()
 		return ParkingFullError
 	}
 	p.vehicles[regNumber] = true
 	if p.IsFull() {
-		p.owner.NotifyParkingFull()
+		//p.owner.NotifyParkingFull()
+		p.notifyObservers()
 	}
 	return nil
 }
@@ -60,6 +64,17 @@ func (p *ParkingLot) UnparkVehicle(regNumber string) error {
 	}
 
 	return VehicleNotfoundError
+}
+
+//func (p *ParkingLot) addObserver(observer Observer) []Observer {
+//	p.observer = append(p.observer, observer)
+//	return p.observer
+//}
+
+func (p *ParkingLot) notifyObservers() {
+	for _, observer := range p.observer {
+		observer.NotifyParkingFull()
+	}
 }
 
 type IOwner interface {
