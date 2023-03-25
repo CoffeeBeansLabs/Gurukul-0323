@@ -14,13 +14,6 @@ func NewParkingLot(capacity int, observers []IObserver) *ParkingLot {
 	}
 }
 
-type IParkingLot interface {
-	ParkVehicle(regNumber string) error
-	IsVehicleParked(regNumber string) bool
-	UnparkVehicle(regNumber string) error
-	IsFull() bool
-}
-
 func (p *ParkingLot) ParkVehicle(regNumber string) error {
 	if p.IsVehicleParked(regNumber) {
 		return VehicleAlreadyParked

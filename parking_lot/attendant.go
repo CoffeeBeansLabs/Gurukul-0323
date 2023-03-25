@@ -1,12 +1,16 @@
 package parking_lot
 
+import "Gurukul-0323/parking_lot/model"
+
 type attendant struct {
-	parkingLots []IParkingLot
+	parkingLots []model.IParkingLot
+	strategy    model.IParkingLotSelector // fuzzyStrategy, MaxCapacityStrategy
 }
 
-func NewAttendant(parkinglots []IParkingLot) *attendant {
+func NewAttendant(parkinglots []model.IParkingLot, strategy model.IParkingLotSelector) *attendant {
 	return &attendant{
 		parkingLots: parkinglots,
+		strategy:    strategy,
 	}
 }
 
@@ -16,7 +20,7 @@ type IAttendant interface {
 }
 
 func (a *attendant) ParkVehicle(regNumber string) error {
-	lot, err := a.fetchParkingLotHavingSpace()
+	lot, err := a.strategy.SelectParkingLot(a.parkingLots)
 	if err != nil {
 		return err
 	}
@@ -31,7 +35,7 @@ func (a *attendant) UnparkVehicle(regNumber string) error {
 	return lot.ParkVehicle(regNumber)
 }
 
-func (a *attendant) fetchParkingLotHavingSpace() (IParkingLot, error) {
+func (a *attendant) fetchParkingLotHavingSpace() (model.IParkingLot, error) {
 	for _, parkingLot := range a.parkingLots {
 		if !parkingLot.IsFull() {
 			return parkingLot, nil
@@ -47,7 +51,7 @@ func (a *attendant) NotifyParkingFull() {
 func (a *attendant) NotifyParkingSpaceAvailable() {
 }
 
-func (a *attendant) fetchParkingLotHavingTheCar(regNumber string) (IParkingLot, error) {
+func (a *attendant) fetchParkingLotHavingTheCar(regNumber string) (model.IParkingLot, error) {
 	for _, parkingLot := range a.parkingLots {
 		if parkingLot.IsVehicleParked(regNumber) {
 			return parkingLot, nil
