@@ -8,8 +8,8 @@ import (
 )
 
 //func TestParkingLot_ParkVehicle(t *testing.T) {
-//	owner := mocks.MockOwner{}
-//	parking := NewParkingLot(1, &owner)
+//	Owner := mocks.MockOwner{}
+//	parking := NewParkingLot(1, &Owner)
 //
 //	// Park a vehicle and check if it is parked
 //	firstVehicleParkingErr := parking.ParkVehicle("abc")
@@ -22,13 +22,13 @@ import (
 //	assert.Equal(t, false, parking.IsVehicleParked("def"))
 //
 //	//Owner is notified
-//	// assert.Equal(t, true, owner.isNotified)
-//	assert.Equal(t, 2, owner.NotifyParkingFullIsCalledTimes)
+//	// assert.Equal(t, true, Owner.isNotified)
+//	assert.Equal(t, 2, Owner.NotifyParkingFullIsCalledTimes)
 //}
 //
 //func TestParkingLot_UnParkVehicle(t *testing.T) {
-//	owner := mocks.MockOwner{}
-//	parking := NewParkingLot(2, &owner)
+//	Owner := mocks.MockOwner{}
+//	parking := NewParkingLot(2, &Owner)
 //
 //	// Park a vehicle and check if it is parked
 //	firstVehicleParkingErr := parking.ParkVehicle("abc")
@@ -39,18 +39,18 @@ import (
 //	assert.Nil(t, secondVehicleParkingErr)
 //	assert.Equal(t, true, parking.IsVehicleParked("cde"))
 //
-//	assert.Equal(t, 1, owner.NotifyParkingFullIsCalledTimes)
+//	assert.Equal(t, 1, Owner.NotifyParkingFullIsCalledTimes)
 //
 //	// Unpark vehicle and check if it is not Parked
 //	VehicleUnParkingErr := parking.UnparkVehicle("abc")
 //	assert.Nil(t, VehicleUnParkingErr)
 //	assert.Equal(t, false, parking.IsVehicleParked("abc"))
-//	assert.Equal(t, 1, owner.NotifyParkingSpaceAvailableIsCalledTimes)
+//	assert.Equal(t, 1, Owner.NotifyParkingSpaceAvailableIsCalledTimes)
 //}
 
 func TestParkingLot_ParkVehicle_Owner_observer(t *testing.T) {
-	//owner := mocks.MockOwner{}
-	owner := mocks.MockObserver{}
+	//Owner := mocks.MockOwner{}
+	owner := mocks.MockAttendant{}
 	parking := NewParkingLot(1, []IObserver{&owner})
 
 	// Park a vehicle and check if it is parked
@@ -64,13 +64,13 @@ func TestParkingLot_ParkVehicle_Owner_observer(t *testing.T) {
 	assert.Equal(t, false, parking.IsVehicleParked("def"))
 
 	//Owner is notified
-	// assert.Equal(t, true, owner.isNotified)
+	// assert.Equal(t, true, Owner.isNotified)
 	assert.Equal(t, 2, owner.NotifyParkingFullIsCalledTimes)
 }
 
 func TestParkingLot_ParkVehicle_Attendant_observer(t *testing.T) {
-	//owner := mocks.MockOwner{}
-	attendant := mocks.MockObserver{}
+	//Owner := mocks.MockOwner{}
+	attendant := mocks.MockAttendant{}
 	parking := NewParkingLot(1, []IObserver{&attendant})
 
 	// Park a vehicle and check if it is parked
@@ -84,13 +84,13 @@ func TestParkingLot_ParkVehicle_Attendant_observer(t *testing.T) {
 	assert.Equal(t, false, parking.IsVehicleParked("def"))
 
 	//Owner is notified
-	// assert.Equal(t, true, owner.isNotified)
+	// assert.Equal(t, true, Owner.isNotified)
 	assert.Equal(t, 2, attendant.NotifyParkingFullIsCalledTimes)
 }
 
 func TestParkingLot_ParkVehicle_Attendant_Owner_observer(t *testing.T) {
-	//owner := mocks.MockOwner{}
-	attendant := mocks.MockObserver{}
+	//Owner := mocks.MockOwner{}
+	attendant := mocks.MockAttendant{}
 	owner := mocks.MockOwner{}
 	parking := NewParkingLot(1, []IObserver{&attendant, &owner})
 
@@ -105,7 +105,7 @@ func TestParkingLot_ParkVehicle_Attendant_Owner_observer(t *testing.T) {
 	assert.Equal(t, false, parking.IsVehicleParked("def"))
 
 	//Owner is notified
-	// assert.Equal(t, true, owner.isNotified)
+	// assert.Equal(t, true, Owner.isNotified)
 	assert.Equal(t, 2, attendant.NotifyParkingFullIsCalledTimes)
 	assert.Equal(t, 2, owner.NotifyParkingFullIsCalledTimes)
 }
