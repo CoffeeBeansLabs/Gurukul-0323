@@ -1,11 +1,11 @@
 package parking_lot
 
-type Attendant struct {
-	parkingLot ParkingLot
+type attendant struct {
+	parkingLot IParkingLot
 }
 
-func NewAttendant(parkinglot ParkingLot) *Attendant {
-	return &Attendant{
+func NewAttendant(parkinglot IParkingLot) *attendant {
+	return &attendant{
 		parkingLot: parkinglot,
 	}
 }
@@ -15,28 +15,16 @@ type IAttendant interface {
 	UnparkVehicle(regNumber string) error
 }
 
-func (p *Attendant) ParkVehicle(regNumber string) error {
-	if p.parkingLot.IsVehicleParked(regNumber) {
-		return VehicleAlreadyParked
-	}
-	if p.parkingLot.IsFull() {
-		p.parkingLot.owner.NotifyParkingFull()
-		return ParkingFullError
-	}
-	p.parkingLot.vehicles[regNumber] = true
-	if p.parkingLot.IsFull() {
-		p.parkingLot.owner.NotifyParkingFull()
-	}
-	return nil
+func (a *attendant) ParkVehicle(regNumber string) error {
+	return a.parkingLot.ParkVehicle(regNumber)
 }
 
-func (p *Attendant) UnparkVehicle(regNumber string) error {
+func (a *attendant) UnparkVehicle(regNumber string) error {
+	return a.parkingLot.UnparkVehicle(regNumber)
+}
 
-	if p.parkingLot.IsVehicleParked(regNumber) {
-		delete(p.parkingLot.vehicles, regNumber)
-		p.parkingLot.owner.NotifyParkingSpaceAvailable()
-		return nil
-	}
+func (a *attendant) NotifyParkingFull() {
+}
 
-	return VehicleNotfoundError
+func (a *attendant) NotifyParkingSpaceAvailable() {
 }

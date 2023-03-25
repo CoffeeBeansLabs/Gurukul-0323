@@ -1,22 +1,10 @@
 package parking_lot
 
-type owner struct {
-	//isNotified bool
+type Owner struct {
 }
 
-//func NewOwner() *owner {
-//	return &owner{
-//		isNotified: false,
-//	}
-//}
+func (o *Owner) NotifyParkingFull() {
+}
 
-//func (o *owner) NotifyParkingFull() {
-//	//if !o.isNotified {
-//	//	// send notification to owner that parking lot is full
-//	//	fmt.Println("[Owner-notification] : Parking Lot is full !! Please Look for new Lot")
-//	//	o.isNotified = true
-//	//}
-//}
-//
-//func (o *owner) NotifyParkingSpaceAvailable() {
-//}
+func (o *Owner) NotifyParkingSpaceAvailable() {
+}

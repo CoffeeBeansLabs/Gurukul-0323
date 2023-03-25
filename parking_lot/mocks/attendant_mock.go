@@ -1,14 +1,14 @@
 package mocks
 
-type MockObserver struct {
+type MockAttendant struct {
 	NotifyParkingFullIsCalledTimes           int
 	NotifyParkingSpaceAvailableIsCalledTimes int
 }
 
-func (m *MockObserver) NotifyParkingFull() {
+func (m *MockAttendant) NotifyParkingFull() {
 	m.NotifyParkingFullIsCalledTimes += 1
 }
 
-func (m *MockObserver) NotifyParkingSpaceAvailable() {
+func (m *MockAttendant) NotifyParkingSpaceAvailable() {
 	m.NotifyParkingSpaceAvailableIsCalledTimes += 1
 }

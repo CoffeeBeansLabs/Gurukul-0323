@@ -11,7 +11,6 @@ var (
 type ParkingLot struct {
 	capacity int
 	vehicles map[string]bool
-	owner    IOwner
 	observer []IObserver
 }
 
@@ -19,7 +18,6 @@ func NewParkingLot(capacity int, observers []IObserver) *ParkingLot {
 	return &ParkingLot{
 		capacity: capacity,
 		vehicles: make(map[string]bool),
-		//owner:    owner,
 		observer: observers,
 	}
 }
@@ -35,14 +33,12 @@ func (p *ParkingLot) ParkVehicle(regNumber string) error {
 		return VehicleAlreadyParked
 	}
 	if p.IsFull() {
-		//p.owner.NotifyParkingFull()
-		p.notifyObservers()
+		p.notifyObserversIfParkingLotIsFull()
 		return ParkingFullError
 	}
 	p.vehicles[regNumber] = true
 	if p.IsFull() {
-		//p.owner.NotifyParkingFull()
-		p.notifyObservers()
+		p.notifyObserversIfParkingLotIsFull()
 	}
 	return nil
 }
@@ -59,7 +55,7 @@ func (p *ParkingLot) UnparkVehicle(regNumber string) error {
 
 	if p.IsVehicleParked(regNumber) {
 		delete(p.vehicles, regNumber)
-		p.owner.NotifyParkingSpaceAvailable()
+		p.notifyObserversIfSpaceAvailable()
 		return nil
 	}
 
@@ -71,13 +67,14 @@ func (p *ParkingLot) UnparkVehicle(regNumber string) error {
 //	return p.observer
 //}
 
-func (p *ParkingLot) notifyObservers() {
+func (p *ParkingLot) notifyObserversIfParkingLotIsFull() {
 	for _, observer := range p.observer {
 		observer.NotifyParkingFull()
 	}
 }
 
-type IOwner interface {
-	NotifyParkingFull()
-	NotifyParkingSpaceAvailable()
+func (p *ParkingLot) notifyObserversIfSpaceAvailable() {
+	for _, observer := range p.observer {
+		observer.NotifyParkingFull()
+	}
 }
