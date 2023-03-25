@@ -1,12 +1,12 @@
 package parking_lot
 
 type attendant struct {
-	parkingLot IParkingLot
+	parkingLots []IParkingLot
 }
 
-func NewAttendant(parkinglot IParkingLot) *attendant {
+func NewAttendant(parkinglots []IParkingLot) *attendant {
 	return &attendant{
-		parkingLot: parkinglot,
+		parkingLots: parkinglots,
 	}
 }
 
@@ -16,15 +16,43 @@ type IAttendant interface {
 }
 
 func (a *attendant) ParkVehicle(regNumber string) error {
-	return a.parkingLot.ParkVehicle(regNumber)
+	lot, err := a.fetchParkingLotHavingSpace()
+	if err != nil {
+		return err
+	}
+	return lot.ParkVehicle(regNumber)
 }
 
 func (a *attendant) UnparkVehicle(regNumber string) error {
-	return a.parkingLot.UnparkVehicle(regNumber)
+	lot, err := a.fetchParkingLotHavingTheCar(regNumber)
+	if err != nil {
+		return err
+	}
+	return lot.ParkVehicle(regNumber)
+}
+
+func (a *attendant) fetchParkingLotHavingSpace() (IParkingLot, error) {
+	for _, parkingLot := range a.parkingLots {
+		if !parkingLot.IsFull() {
+			return parkingLot, nil
+		}
+	}
+
+	return nil, ParkingFullError
 }
 
 func (a *attendant) NotifyParkingFull() {
 }
 
 func (a *attendant) NotifyParkingSpaceAvailable() {
+}
+
+func (a *attendant) fetchParkingLotHavingTheCar(regNumber string) (IParkingLot, error) {
+	for _, parkingLot := range a.parkingLots {
+		if parkingLot.IsVehicleParked(regNumber) {
+			return parkingLot, nil
+		}
+	}
+
+	return nil, VehicleNotfoundError
 }
