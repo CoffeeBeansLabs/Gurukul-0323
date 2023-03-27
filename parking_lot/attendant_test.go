@@ -1,9 +1,11 @@
 package parking_lot
 
 import (
+	"Gurukul-0323/parking_lot/error_handler"
 	"Gurukul-0323/parking_lot/mocks"
 	"Gurukul-0323/parking_lot/model"
-	"errors"
+	"Gurukul-0323/parking_lot/strategies"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -18,9 +20,8 @@ func TestAttendant_ParkVehicle_Success(t *testing.T) {
 	})
 
 	err := attendant.ParkVehicle("ABC123")
-	if err != nil {
-		t.Errorf("Expected nil, got error: %v", err)
-	}
+	assert.Nil(t, err)
+
 }
 
 // Test parking vehicle when all parking lots are full
@@ -31,13 +32,11 @@ func TestAttendant_ParkVehicle_Error(t *testing.T) {
 	}
 	attendant := NewAttendant(parkinglots, mocks.MockStrategy{
 		ParkingLot:    parkinglots[0],
-		ErrorToReturn: ParkingFullError,
+		ErrorToReturn: error_handler.ParkingFullError,
 	})
 
 	err := attendant.ParkVehicle("ABC123")
-	if !errors.Is(err, ParkingFullError) {
-		t.Errorf("Expected error: %v, got: %v", ParkingFullError, err)
-	}
+	assert.Equal(t, error_handler.ParkingFullError, err)
 }
 
 // Test unparking vehicle when the vehicle is parked in one of the lots
@@ -49,9 +48,8 @@ func TestAttendant_UnparkVehicle_Success(t *testing.T) {
 	attendant := NewAttendant(parkinglots, mocks.MockStrategy{})
 
 	err := attendant.UnparkVehicle("ABC123")
-	if err != nil {
-		t.Errorf("Expected nil, got error: %v", err)
-	}
+	assert.Nil(t, err)
+
 }
 
 // Test unparking vehicle when the vehicle is not parked in any of the lots
@@ -63,7 +61,74 @@ func TestAttendant_UnparkVehicle_Error(t *testing.T) {
 	attendant := NewAttendant(parkinglots, mocks.MockStrategy{})
 
 	err := attendant.UnparkVehicle("ABC123")
-	if !errors.Is(err, VehicleNotfoundError) {
-		t.Errorf("Expected error: %v, got: %v", VehicleNotfoundError, err)
-	}
+	assert.Equal(t, error_handler.VehicleNotfoundError, err)
+
+}
+
+func TestAttendant_SelectParkingLot_MaxCapacity(t *testing.T) {
+	parkingLot1 := NewParkingLot(3, nil)
+	parkingLot2 := NewParkingLot(2, nil)
+	parkingLot3 := NewParkingLot(4, nil)
+
+	attendant := NewAttendant(
+		[]model.IParkingLot{parkingLot1, parkingLot2, parkingLot3},
+		strategies.MaxCapacity{},
+	)
+
+	// Fill up all parking lots
+	err := attendant.ParkVehicle("KA-01-HH-1234")
+	assert.Nil(t, err)
+
+	// Select parking lot with max capacity
+	lot, err := strategies.MaxCapacity{}.SelectParkingLot([]model.IParkingLot{parkingLot1, parkingLot2, parkingLot3})
+	assert.Nil(t, err)
+	assert.Equal(t, lot, parkingLot3)
+
+	assert.Equal(t, true, parkingLot3.IsVehicleParked("KA-01-HH-1234"))
+	assert.Equal(t, false, parkingLot1.IsVehicleParked("KA-01-HH-1234"))
+	assert.Equal(t, false, parkingLot2.IsVehicleParked("KA-01-HH-1234"))
+}
+
+func TestAttendant_SelectParkingLot_MaxFreeSpace(t *testing.T) {
+	parkingLot1 := NewParkingLot(3, nil)
+	parkingLot2 := NewParkingLot(6, nil)
+
+	attendant := NewAttendant(
+		[]model.IParkingLot{parkingLot1, parkingLot2},
+		strategies.MaxAvailableSpace{},
+	)
+
+	// Fill up all parking lots
+	err := attendant.ParkVehicle("KA-01-HH-1234")
+	assert.Nil(t, err)
+
+	// Select parking lot with max capacity
+	lot, err := strategies.MaxAvailableSpace{}.SelectParkingLot([]model.IParkingLot{parkingLot1, parkingLot2})
+	assert.Nil(t, err)
+	assert.Equal(t, lot, parkingLot2)
+
+	assert.Equal(t, false, parkingLot1.IsVehicleParked("KA-01-HH-1234"))
+	assert.Equal(t, true, parkingLot2.IsVehicleParked("KA-01-HH-1234"))
+}
+
+func TestAttendant_SelectParkingLot_FirstComeFirstServe(t *testing.T) {
+	parkingLot1 := NewParkingLot(3, nil)
+	parkingLot2 := NewParkingLot(6, nil)
+
+	attendant := NewAttendant(
+		[]model.IParkingLot{parkingLot1, parkingLot2},
+		strategies.FirstComeFirstServe{},
+	)
+
+	// Fill up all parking lots
+	err := attendant.ParkVehicle("KA-01-HH-1234")
+	assert.Nil(t, err)
+
+	// Select parking lot with max capacity
+	lot, err := strategies.FirstComeFirstServe{}.SelectParkingLot([]model.IParkingLot{parkingLot1, parkingLot2})
+	assert.Nil(t, err)
+	assert.Equal(t, lot, parkingLot1)
+
+	assert.Equal(t, true, parkingLot1.IsVehicleParked("KA-01-HH-1234"))
+	assert.Equal(t, false, parkingLot2.IsVehicleParked("KA-01-HH-1234"))
 }

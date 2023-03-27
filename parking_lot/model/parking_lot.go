@@ -5,4 +5,6 @@ type IParkingLot interface {
 	IsVehicleParked(regNumber string) bool
 	UnparkVehicle(regNumber string) error
 	IsFull() bool
+	FetchCapacity() int
+	GetAvailableSpace() int
 }

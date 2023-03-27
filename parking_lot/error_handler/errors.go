@@ -1,4 +1,4 @@
-package parking_lot
+package error_handler
 
 import "errors"
 

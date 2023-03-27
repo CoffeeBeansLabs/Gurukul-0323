@@ -1,5 +1,5 @@
 package model
 
 type IParkingLotSelector interface {
-	SelectParkingLot([]IParkingLot) (IParkingLot, error)
+	SelectParkingLot(lots []IParkingLot) (IParkingLot, error)
 }
